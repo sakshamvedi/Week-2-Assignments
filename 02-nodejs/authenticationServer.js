@@ -32,6 +32,43 @@
 const express = require("express")
 const PORT = 3000;
 const app = express();
+const users = [];
+var bodyParser = require('body-parser')
+app.use(bodyParser.json());
 // write your logic here, DONT WRITE app.listen(3000) when you're running tests, the tests will automatically start the server
+app.post('/signup', (req, res) => {
+  const newUser = req.body;
 
+
+
+  if (users.length > 0) {
+    users.map((data) => {
+      if (data.username == newUser.username) {
+        return res.status(400).send("Username Already Exist");
+      }
+    })
+  }
+
+  users.push(newUser);
+  res.status(201).send("User Created Successfully ");
+
+})
+
+app.get('/data', (req, res) => {
+  return res.send(users);
+})
+
+app.get('/login', (req, res) => {
+  const username = req.body.username;
+  const password = req.body.password;
+  users.forEach((data) => {
+    if (data.username == username && data.password == password) {
+      return res.status(200).send("hi" + data.firstName + "welcome to the postman");
+    }
+
+  })
+  res.status(401).send("Invalid Creds");
+})
+
+app.listen(3000);
 module.exports = app;

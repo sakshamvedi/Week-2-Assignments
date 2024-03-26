@@ -25,6 +25,7 @@
     
   4. PUT /todos/:id - Update an existing todo item by ID
     Description: Updates an existing todo item identified by its ID.
+
     Request Body: JSON object representing the updated todo item.
     Response: 200 OK if the todo item was found and updated, or 404 Not Found if not found.
     Example: PUT http://localhost:3000/todos/123
@@ -45,5 +46,68 @@ const bodyParser = require('body-parser');
 const app = express();
 
 app.use(bodyParser.json());
+
+const todos = [];
+
+app.get('/todos', (req, res) => {
+  res.status(200).json(todos);
+}
+);
+
+app.get('/todos/:id', (req, res) => {
+  const id = req.params.id;
+  console.log(id);
+  todos.map((data) => {
+    if (data.id == id) {
+      return res.status(200).json(data);
+    }
+  })
+
+  res.status(404).send();
+
+}
+);
+
+
+app.post('/todos', (req, res) => {
+  const newTodo = {
+    "id": todos.length + 1,
+    "title": req.body.title,
+    "description": req.body.description,
+
+  };
+  todos.push(newTodo);
+  res.status(201).json(newTodo);
+});
+
+app.put('/todos/:id', (req, res) => {
+  const id = req.params.id;
+  const passeddata = req.body;
+
+  todos.forEach((data) => {
+    console.log(data);
+    if (data.id == id) {
+      data.title = passeddata.title;
+      data.description = passeddata.description;
+
+    }
+    res.status(200).send();
+  })
+  res.status(400).send();
+})
+
+
+app.delete('/todos/:id', (req, res) => {
+  const id = req.params.id;
+  todos.forEach((data, idx) => {
+    if (data.id == id) {
+      todos.splice(idx, 1);
+      res.status(200).send();
+    }
+
+  })
+  res.status(200).send();
+})
+
 
 module.exports = app;
